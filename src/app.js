@@ -17,23 +17,24 @@ const app = express();
 // })
 
 //This will only handle GET call to /user
-app.get("/user", (req, res) => {
+app.get("/user/:userId", (req, res) => {
+  console.log(req.params);
   res.send({firstName: "Akshay", lasrName: "saini"})
 })
 
-app.post("/user", (req, res) => {
-  // saving to the DB logic
-  res.send("Data successfiully saved to the Db");
-})
+// app.post("/user", (req, res) => {
+//   // saving to the DB logic
+//   res.send("Data successfiully saved to the Db");
+// })
 
-app.delete("/user", (eq, res) => {
-  res.send("Date deleted Successfully")
-})
+// app.delete("/user", (eq, res) => {
+//   res.send("Date deleted Successfully")
+// })
 
 // This will handle all type of HTTP method API calls to /test
-app.use("/test",(req, res) => { 
-  res.send("Hello from express");
-})
+// app.use("/test",(req, res) => { 
+//   res.send("Hello from express");
+// })
 
 app.listen(3000, () => {
   console.log("server is successfully running on port 3000")
