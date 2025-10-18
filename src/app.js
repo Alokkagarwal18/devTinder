@@ -51,24 +51,28 @@ const app = express();
 
 // Handle Auth middleware for all HTTP mwthods
 
-const { adminAuth, userAuth } = require("./middlewares/auth.js"); 
-app.use("/admin", adminAuth);
 
-app.get("/admin/getAllData", (req, res) => {
-  //Check if the req Authorized
-  res.send("All data Sent");
-});
 
-app.post("/user/login", (req, res) => {
-  res.send("User logged in successfully");
+
+app.get("/getUserData", (req, res) => {
+// try {
+  throw new Error("asdfg");
+  res.send("User Data Send");
+// } catch (err) {
+//   res.status(500).send("some error contact support team")
+// }
 })
 
-app.get("/user/data", userAuth, (req, res) => {
-  res.send("user data sent");
-});
+app.use("/", (err, req, res, next) => {
+    if(err){
+      // and i also log your error
+      res.status(500).send("something went wrong")
+    }
+})
 
-app.get("/admin/deleteUser", (req, res) => {
-  res.send("Deleted a User");
+
+app.get("/user", (req, res) => {
+  res.send("user data sent");
 });
 
 app.listen(3000, () => {
