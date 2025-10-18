@@ -11,16 +11,16 @@ const app = express();
 // app.use("/hello", (req, res) =>{
 //   res.send("Hello Hello .....")
 // })
-// This is not routing beacuse before this match hello rpute so this will never be executed 
+// This is not routing beacuse before this match hello rpute so this will never be executed
 // app.use("/hello/2", (req, res) =>{
 //     res.send("Hello Hello 2 .....");
 // })
 
 //This will only handle GET call to /user
-app.get("/user/:userId", (req, res) => {
-  console.log(req.params);
-  res.send({firstName: "Akshay", lasrName: "saini"})
-})
+// app.get("/user/:userId", (req, res) => {
+//   console.log(req.params);
+//   res.send({firstName: "Akshay", lasrName: "saini"})
+// })
 
 // app.post("/user", (req, res) => {
 //   // saving to the DB logic
@@ -32,10 +32,45 @@ app.get("/user/:userId", (req, res) => {
 // })
 
 // This will handle all type of HTTP method API calls to /test
-// app.use("/test",(req, res) => { 
+// app.use("/test",(req, res) => {
 //   res.send("Hello from express");
 // })
 
+// app.use("/user", [rh1, rh2, rh3, rh4])
+
+// app.use("/user",
+//    (req, res, next) => {
+//     console.log("Handling the route user");
+//     res.send("Response 1");
+//     next();
+// },
+//   (req, res) => {
+//     console.log("Handling the route user - 2");
+//     res.send("Response 2");
+//   })
+
+// Handle Auth middleware for all HTTP mwthods
+
+const { adminAuth, userAuth } = require("./middlewares/auth.js"); 
+app.use("/admin", adminAuth);
+
+app.get("/admin/getAllData", (req, res) => {
+  //Check if the req Authorized
+  res.send("All data Sent");
+});
+
+app.post("/user/login", (req, res) => {
+  res.send("User logged in successfully");
+})
+
+app.get("/user/data", userAuth, (req, res) => {
+  res.send("user data sent");
+});
+
+app.get("/admin/deleteUser", (req, res) => {
+  res.send("Deleted a User");
+});
+
 app.listen(3000, () => {
-  console.log("server is successfully running on port 3000")
+  console.log("server is successfully running on port 3000");
 });
