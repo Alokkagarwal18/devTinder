@@ -45,6 +45,38 @@ app.get("/feed", (req,res) => {
     }
 })
 
+// Delete a user from Database
+app.delete("/user", async (req, res) => {
+    const userId = req.body.userId;
+
+    try {
+        // you can also write like this beacuse Documentation is always true
+      // const user = await User.findByIdAndDelete({_id: userId});
+      const user = await User.findByIdAndDelete(userId);
+      res.send("User deleted successfully")
+    } catch (err) {
+      res.status(400).send("something went wrong");
+    }
+})
+
+// Upadate the User
+app.patch("/user", async (req, res) => {
+    const userId = req.body.userId;
+    const data = req.body;
+
+    try {
+      // if we add the field which is not present in Schema those fields are ignored by APIs or mongoDB  // some thing like in data we want to add skills field so this field ignored by mongoDB because we dont define this field in Schema
+      const user = await User.findByIdAndUpdate({_id: userId}, data, {
+        returnDocument: "after",
+        runValidators: true,
+      });
+      res.send("User updated successfully")
+    } catch (err) {
+      res.status(400).send("something went wrong");
+      
+    }
+}, )
+
 
 connectDB().then(() => {
   console.log("Database connection established")  
