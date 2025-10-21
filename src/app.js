@@ -3,15 +3,12 @@ const connectDB = require("./config/database.js")
 const app = express();
 const User = require("./models/user.js");
 
+app.use(express.json());
+
 
 app.post("/signup", async (req, res) => {
   //crating a new instance of User model
-    const user = new User({
-      firstName: "Alok",
-      lastName: "Agarwal",
-      emailId: "alok@gmail.com",
-      password: "Alok123"
-    })
+    const user = new User(req.body)
 
     // it always give us t oa promise so handle the promise we used async await
     try {
