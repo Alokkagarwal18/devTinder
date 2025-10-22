@@ -2,15 +2,31 @@ const express = require("express");
 const connectDB = require("./config/database.js");
 const app = express();
 const User = require("./models/user.js");
+const { validateSignUpData } = require("./utils/validation.js");
 
 app.use(express.json());
 
 app.post("/signup", async (req, res) => {
+
+  try {
+  // validate the signup data
+  validateSignUpData(req);
+
+  const { firstName, lastName, emailId, password} = req.body;
+  // Encrypt the password
+
+  const passwordHash = await bcrypt.hash(password, 10);
+
   //crating a new instance of User model
-  const user = new User(req.body);
+  const user = new User({
+    firstName,
+    lastName,
+    emailId,
+    password: passwordHash,
+    
+  });
 
   // it always give us t oa promise so handle the promise we used async await
-  try {
     await user.save();
     res.send("User signed up successfully");
   } catch (err) {
