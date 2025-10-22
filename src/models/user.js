@@ -18,20 +18,20 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       unique: true,
       trim: true,
-      // validate(value){
-      //   if(!validator.isEmail(value)){
-      //     throw new Error("Invalid Email" + value);
-      //   }
-      // }
+      validate(value){
+        if(!validator.isEmail(value)){
+          throw new Error("Invalid Email" + value);
+        }
+      }
     },
     password: {
       type: String,
       required: true,
-      // validate(value){
-      //   if(!validator.isStrongPassword(value)){
-      //     throw new Error("Enter a Strong Password" + value);
-      //   }
-      // }
+      validate(value){
+        if(!validator.isStrongPassword(value)){
+          throw new Error("Enter a Strong Password" + value);
+        }
+      }
     },
     gender: {
       type: String,
@@ -48,11 +48,11 @@ const userSchema = new mongoose.Schema(
     },
     photoUrl: {
       type: String,
-      // validate(value){
-      //   if(!validator.isURL(value)){
-      //     throw new Error("Invalid Photo URL" + value);
-      //   }
-      // }
+      validate(value){
+        if(!validator.isURL(value)){
+          throw new Error("Invalid Photo URL" + value);
+        }
+      }
     },
     about: {
       type: String,
