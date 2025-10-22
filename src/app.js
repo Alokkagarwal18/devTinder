@@ -23,7 +23,7 @@ app.post("/signup", async (req, res) => {
     lastName,
     emailId,
     password: passwordHash,
-    
+
   });
 
   // it always give us t oa promise so handle the promise we used async await
@@ -33,6 +33,29 @@ app.post("/signup", async (req, res) => {
     res.status(400).send("Error while signing up the user");
   }
 });
+
+
+app.post("/login", async (req, res) => {
+    try {
+        const { emailId, password } = req.body;
+
+        validateSignUpData(req);
+
+        const user = await User.findOne({ emailId: emailId });
+        if(!user){
+          throw new Error("Invalid Credentials")
+        }
+        const isPasswordValid = bcrypt.compare(password, user.password);
+        if(isPasswordValid){
+            res.send("Login Successful");
+        }
+        else{
+          throw new Error("Invalid Credentials");
+        }
+    } catch (err) {
+        res.status(400).send("ERROR:" + err.message);
+    }
+})
 
 // get user by email
 app.get("/user", async (req, res) => {
