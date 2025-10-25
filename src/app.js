@@ -1,89 +1,21 @@
 const express = require("express");
 const connectDB = require("./config/database.js");
 const app = express();
-const User = require("./models/user.js");
-const { validateSignUpData } = require("./utils/validation.js");
-const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
-const jwt = require("jsonwebtoken");
-const { userAuth } = require("./middlewares/auth.js")
 
 app.use(express.json());
 
-// This middleware will used for read the cookies 
+// This middleware will used for read the cookies
 app.use(cookieParser());
 
-app.post("/signup", async (req, res) => {
-  try {
-    // validate the signup data
-    validateSignUpData(req);
+const authRouter = require("./routes/auth.js");
+const profileRouter = require("./routes/profile.js");
+const requestRouter = require("./routes/request.js");
 
-    const { firstName, lastName, emailId, password } = req.body;
-    // Encrypt the password
+app.use("/", authRouter);
+app.use("/", profileRouter);
+app.use("/", requestRouter);
 
-    const passwordHash = await bcrypt.hash(password, 10);
-
-    //crating a new instance of User model
-    const user = new User({
-      firstName,
-      lastName,
-      emailId,
-      password: passwordHash,
-    });
-
-    // it always give us t oa promise so handle the promise we used async await
-    await user.save();
-    res.send("User signed up successfully");
-  } catch (err) {
-    res.status(400).send("Error while signing up the user");
-  }
-});
-
-app.post("/login", async (req, res) => {
-  try {
-    const { emailId, password } = req.body;
-
-    validateSignUpData(req);
-
-    const user = await User.findOne({ emailId: emailId });
-    if (!user) {
-      throw new Error("Invalid Credentials");
-    }
-    const isPasswordValid = await user.validatePassword(password);
-    if (isPasswordValid) {
-      // create JWT token
-      // In jWT there ae three fields 
-      // 1. The Data you want to hiding for known data of which user(who has logged in)
-      // 2. The secret key
-      // 3. jwt add signatue for verify
-      // hiding the userid and give the secret key and sighn methid added a signature to string whenever verify compare the string it check the signature so this is the 
-      const token = await user.getJWT(); 
-
-      // Add the token to cookie and send the response back to the user
-      res.cookie("token", token, {
-        expires: new Date(Date.now() + 8*3600000),
-      });
-      res.send("Login Successful");
-    } else {
-      throw new Error("Invalid Credentials");
-    }
-  } catch (err) {
-    res.status(400).send("ERROR:" + err.message);
-  }
-});
-
-app.get("/profile",userAuth, async (req, res) => {
-  try {
-    const user = req.user;  
-    res.send(user);
-  } catch (error) {
-    res.status(400).send("ERROR:" + err.message);
-  }
-});
-
-app.post("/sendconnectionrequest", userAuth, async (req, res) => {
-  res.send("Connection send Successfully"); 
-})
 // get user by email
 app.get("/user", async (req, res) => {
   const userEmail = req.body.emailId;

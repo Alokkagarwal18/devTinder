@@ -3,7 +3,6 @@ const jwt = require("jsonwebtoken");
 
 
 const userAuth = async (req, res, next) => { 
-
   try {
     // Read the token from the req cookies
     const { token } = req.cookies;
@@ -29,11 +28,7 @@ const userAuth = async (req, res, next) => {
   }
 };
 
-
-
-module.exports = { adminAuth, userAuth }
-
-
+module.exports = { userAuth }
 
 // const adminAuth = (req, res, next) => {
 //   console.group("Admin Auth is Checked");
