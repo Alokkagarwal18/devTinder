@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 const userSchema = new mongoose.Schema(
   {
@@ -64,5 +66,27 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+userSchema.methods.getJWT = async function () {
+  //never used arrow fn in these type of methods in Schema because this keyword nit work with arrow fn for more info watch this keyword video on youtube of akshay saini
+  const user = this;
+
+  const token = await jwt.sign({ _id: user._id}, "JWT_SECRET_KEY123", {expiresIn: "7d"});
+
+  return token;
+}
+
+userSchema.methods.validatePassword = async function (passwordInputByUser) {
+  const user = this;
+  const passwordHash = user.password;
+
+  const isPasswordValid = await bcrypt.compare(
+    //if we change the order of these this will get error 
+    passwordInputByUser,
+    passwordHash,
+  )
+
+  return isPasswordValid;
+}
 
 module.exports = mongoose.model("User", userSchema);

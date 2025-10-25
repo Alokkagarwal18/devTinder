@@ -6,8 +6,11 @@ const { validateSignUpData } = require("./utils/validation.js");
 const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
+const { userAuth } = require("./middlewares/auth.js")
 
 app.use(express.json());
+
+// This middleware will used for read the cookies 
 app.use(cookieParser());
 
 app.post("/signup", async (req, res) => {
@@ -46,14 +49,20 @@ app.post("/login", async (req, res) => {
     if (!user) {
       throw new Error("Invalid Credentials");
     }
-    const isPasswordValid = bcrypt.compare(password, user.password);
+    const isPasswordValid = await user.validatePassword(password);
     if (isPasswordValid) {
       // create JWT token
-      const token = await jwt.sign({ id: user._id }, "JWT_SECRET_KEY123");
-      console.log(token);
+      // In jWT there ae three fields 
+      // 1. The Data you want to hiding for known data of which user(who has logged in)
+      // 2. The secret key
+      // 3. jwt add signatue for verify
+      // hiding the userid and give the secret key and sighn methid added a signature to string whenever verify compare the string it check the signature so this is the 
+      const token = await user.getJWT(); 
 
       // Add the token to cookie and send the response back to the user
-      res.cookie("token", token);
+      res.cookie("token", token, {
+        expires: new Date(Date.now() + 8*3600000),
+      });
       res.send("Login Successful");
     } else {
       throw new Error("Invalid Credentials");
@@ -63,30 +72,18 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.get("/profile", async (req, res) => {
+app.get("/profile",userAuth, async (req, res) => {
   try {
-    const cookies = req.cookies;
-    const { token } = cookies;
-
-    if (!token) {
-      throw new Error("Invalid Token");
-    }
-
-    const decodedMessage = await jwt.verify(token, "JWT_SECRET_KEY123");
-
-    const { _id } = decodedMessage;
-
-    const user = User.findById(_id);
-    if (!user) {
-      throw new Error("User doest not exist");
-    }
-
+    const user = req.user;  
     res.send(user);
   } catch (error) {
     res.status(400).send("ERROR:" + err.message);
   }
 });
 
+app.post("/sendconnectionrequest", userAuth, async (req, res) => {
+  res.send("Connection send Successfully"); 
+})
 // get user by email
 app.get("/user", async (req, res) => {
   const userEmail = req.body.emailId;
