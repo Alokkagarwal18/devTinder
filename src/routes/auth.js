@@ -36,7 +36,7 @@ authRouter.post("/login", async (req, res) => {
   try {
     const { emailId, password } = req.body;
 
-    validateSignUpData(req);
+    // validateSignUpData(req);
 
     const user = await User.findOne({ emailId: emailId });
     if (!user) {
@@ -64,6 +64,17 @@ authRouter.post("/login", async (req, res) => {
     res.status(400).send("ERROR:" + err.message);
   }
 });
+
+authRouter.post("/logout", async (req, res) => {
+
+  // this is called chaining these are used in production
+      res
+        .cookie("token", null, {
+         expires : new Date(Date.now())
+      })
+      .send("Logout Successfully");
+      // res.send();
+})
 
 
 module.exports = authRouter;
