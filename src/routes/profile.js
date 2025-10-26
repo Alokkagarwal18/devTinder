@@ -30,4 +30,9 @@ profileRouter.patch("/profile/edit", async (req, res) => {
   }
 })
 
+
+profileRouter.patch("/profile/forgot-password", async (req, res) => {
+  
+})
+
 module.exports = profileRouter;
