@@ -5,7 +5,6 @@ const bcrypt = require("bcrypt");
 
 const authRouter = express.Router();
 
-
 authRouter.post("/signup", async (req, res) => {
   try {
     // validate the signup data
@@ -45,16 +44,16 @@ authRouter.post("/login", async (req, res) => {
     const isPasswordValid = await user.validatePassword(password);
     if (isPasswordValid) {
       // create JWT token
-      // In jWT there ae three fields 
+      // In jWT there ae three fields
       // 1. The Data you want to hiding for known data of which user(who has logged in)
       // 2. The secret key
       // 3. jwt add signatue for verify
-      // hiding the userid and give the secret key and sighn methid added a signature to string whenever verify compare the string it check the signature so this is the 
-      const token = await user.getJWT(); 
+      // hiding the userid and give the secret key and sighn methid added a signature to string whenever verify compare the string it check the signature so this is the
+      const token = await user.getJWT();
 
       // Add the token to cookie and send the response back to the user
       res.cookie("token", token, {
-        expires: new Date(Date.now() + 8*3600000),
+        expires: new Date(Date.now() + 8 * 3600000),
       });
       res.send("Login Successful");
     } else {
@@ -66,15 +65,13 @@ authRouter.post("/login", async (req, res) => {
 });
 
 authRouter.post("/logout", async (req, res) => {
-
   // this is called chaining these are used in production
-      res
-        .cookie("token", null, {
-         expires : new Date(Date.now())
-      })
-      .send("Logout Successfully");
-      // res.send();
-})
-
+  res
+    .cookie("token", null, {
+      expires: new Date(Date.now()),
+    })
+    .send("Logout Successfully");
+  // res.send();
+});
 
 module.exports = authRouter;
